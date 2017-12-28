@@ -1,0 +1,82 @@
+{
+  "builders": [{
+    "type": "virtualbox-iso",
+    "guest_os_type": "Ubuntu_64",
+    "iso_url": "{{user `mirror`}}/ubuntu-16.04.3-server-amd64.iso",
+    "iso_checksum": "{{user `iso_checksum`}}",
+    "iso_checksum_type": "{{user `iso_checksum_type`}}",
+    "output_directory": "output-{{build_type}}",
+    "vm_name": "packer-ubuntu-16.04-amd64",
+    "disk_size": "{{user `disk_size`}}",
+    "headless": "{{user `headless`}}",
+    "http_directory": "http",
+    "boot_wait": "5s",
+    "boot_command": [
+      "<enter><wait><f6><esc><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+      "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+      "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+      "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+      "/install/vmlinuz auto",
+      " console-setup/ask_detect=false",
+      " console-setup/layoutcode=de",
+      " console-setup/modelcode=pc105",
+      " debconf/frontend=noninteractive",
+      " debian-installer=en_US.UTF8",
+      " fb=false",
+      " initrd=/install/initrd.gz",
+      " keymap=de debian-installer/keymap=de",
+      " kbd-chooser/method=de-latin1-nodeadkeys",
+      " keyboard-configuration/layout=Germany",
+      " keyboard-configuration/variant=Germany",
+      " locale=en_US.UTF8",
+      " netcfg/get_domain=vm",
+      " netcfg/get_hostname=ubuntu",
+      " noapic" ,
+      " preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/preseed.cfg",
+      " -- ",
+      "<enter>"
+    ],
+    "ssh_timeout": "{{user `ssh_timeout`}}",
+    "ssh_username": "ubuntu",
+    "ssh_password": "ubuntu",
+    "shutdown_command": "echo 'ubuntu' | sudo -S systemctl poweroff",
+    "vboxmanage": [
+      ["modifyvm", "{{.Name}}", "--memory", "{{user `memory`}}"],
+      ["modifyvm", "{{.Name}}", "--cpus", "{{user `cpus`}}"],
+      ["modifyvm", "{{.Name}}", "--natpf1", "ssh,tcp,,2222,,22"],
+      ["modifyvm", "{{.Name}}", "--natpf1", "apache,tcp,,80,,80"]
+    ]
+  }],
+  "provisioners": [
+    {
+      "type": "shell",
+      "expect_disconnect": "true",
+      "execute_command": "echo 'ubuntu' | sudo -S bash {{ .Path }}",
+      "scripts": [
+        "scripts/apt.sh",   
+        "scripts/sudoers.sh",     
+        "scripts/setupcon.sh",
+        "scripts/cleanup.sh"
+      ]
+    },
+    {
+      "type": "shell",
+      "execute_command": "echo 'ubuntu' | sudo -S bash {{ .Path }}",
+      "only": ["virtualbox-iso"],
+      "scripts": [
+        "scripts/virtualbox.sh"
+      ]
+    }
+  ],
+  "variables": {
+    "compression_level": "6",
+    "cpus": "4",
+    "disk_size": "100000",
+    "headless": "false",
+    "iso_checksum": "a06cd926f5855d4f21fb4bc9978a35312f815fbda0d0ef7fdc846861f4fc4600",
+    "iso_checksum_type": "sha256",
+    "memory": "8192",
+    "mirror": "file://C:/VirtualBox/HardDisks",
+    "ssh_timeout": "60m"
+  }
+}
