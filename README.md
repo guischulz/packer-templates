@@ -40,3 +40,13 @@ ssh    | TCP      | 22        | 22
 Build an Ubuntu 18.04 server image with a 10 GB hard disk, 2 GB memory and 1 CPU using the VirtualBox provider:
 
     packer build -only=virtualbox-iso -var disk_size=10000 -var memory=2048 -var cpus=1 -var mirror="http://cdimage.ubuntu.com/releases/18.04/release" ubuntu-18.04.3-server-amd64.json
+
+**Know Problem**: On Windows platform `packer` sometimes fails to halt and deregister the VirtualBox VM.
+
+    ==> virtualbox-iso: Error detaching ISO: VBoxManage error: VBoxManage.exe: error: Failed to get a console object from the direct session (VBOX_E_INVALID_OBJECT_STATE)
+    ==> virtualbox-iso: VBoxManage.exe: error: Details: code VBOX_E_VM_ERROR (0x80bb0003), component MachineWrap, interface IMachine, callee IUnknown
+    ==> virtualbox-iso: VBoxManage.exe: error: Context: "LockMachine(a->session, LockType_Shared)" at line 336 of file VBoxManageStorageController.cpp
+
+**Workaround**: Add option `post_shutdown_delay` to your `packer` command line arguments, e.g.
+
+    packer build -only=virtualbox-iso -var post_shutdown_delay=2m ...
