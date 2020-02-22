@@ -14,7 +14,7 @@ Change working directory to template sub-directory:
 
 Build a machine image from the template in the repository:
 
-    packer build ubuntu-18.04.3-server-amd64.json
+    packer build ubuntu-18.04.4-server-amd64.json
 
 ## Configuration
 
@@ -39,7 +39,7 @@ ssh    | TCP      | 22        | 22
 
 Build an Ubuntu 18.04 server image with a 10 GB hard disk, 2 GB memory and 1 CPU using the VirtualBox provider:
 
-    packer build -only=virtualbox-iso -var disk_size=10000 -var memory=2048 -var cpus=1 -var mirror="http://cdimage.ubuntu.com/releases/18.04/release" ubuntu-18.04.3-server-amd64.json
+    packer build -only=virtualbox-iso -var disk_size=10000 -var memory=2048 -var cpus=1 -var mirror="http://cdimage.ubuntu.com/releases/18.04/release" ubuntu-18.04.4-server-amd64.json
 
 **Know Problem**: On Windows platform `packer` sometimes fails to halt and deregister the VirtualBox VM.
 
