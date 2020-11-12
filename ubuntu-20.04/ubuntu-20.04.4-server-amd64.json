@@ -1,0 +1,73 @@
+{
+  "builders": [{
+    "type": "virtualbox-iso",
+    "guest_os_type": "Ubuntu_64",
+    "iso_url": "{{user `mirror`}}/ubuntu-20.04.1-legacy-server-amd64.iso",
+    "iso_checksum": "{{user `iso_checksum`}}",
+    "output_directory": "output-{{build_type}}",
+    "vm_name": "packer-ubuntu-20.04-amd64",
+    "disk_size": "{{user `disk_size`}}",
+    "headless": "{{user `headless`}}",
+    "http_directory": "http",
+    "boot_wait": "5s",
+    "boot_command": [
+      "<esc><wait>",
+      "<esc><wait>",
+      "<enter><wait>",
+      "/install/vmlinuz",
+      " auto=true",
+      " debian-installer=en_US",
+      " initrd=/install/initrd.gz",
+      " keymap=skip-config",
+      " locale=en_US",
+      " priority=high",
+      " netcfg/get_domain=vm",
+      " netcfg/get_hostname=ubuntu",
+      " noapic",
+      " preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/preseed.cfg",
+      " --<enter>"
+    ],
+    "ssh_timeout": "{{user `ssh_timeout`}}",
+    "ssh_username": "ubuntu",
+    "ssh_password": "ubuntu",
+    "shutdown_command": "echo 'ubuntu' | sudo -S systemctl poweroff",
+    "vboxmanage": [
+      ["modifyvm", "{{.Name}}", "--memory", "{{user `memory`}}"],
+      ["modifyvm", "{{.Name}}", "--cpus", "{{user `cpus`}}"],
+      ["modifyvm", "{{.Name}}", "--vrde", "off"],
+      ["modifyvm", "{{.Name}}", "--natpf1", "ssh,tcp,,22,,22"],
+      ["modifyvm", "{{.Name}}", "--natpf1", "apache,tcp,,80,,80"]
+    ]
+  }],
+  "provisioners": [
+    {
+      "type": "shell",
+      "expect_disconnect": "true",
+      "execute_command": "echo 'ubuntu' | sudo -S bash {{ .Path }}",
+      "scripts": [
+        "scripts/apt.sh",   
+        "scripts/sudoers.sh",     
+        "scripts/setupcon.sh",
+        "scripts/cleanup.sh"
+      ]
+    },
+    {
+      "type": "shell",
+      "execute_command": "echo 'ubuntu' | sudo -S bash {{ .Path }}",
+      "only": ["virtualbox-iso"],
+      "scripts": [
+        "scripts/virtualbox.sh"
+      ]
+    }
+  ],
+  "variables": {
+    "compression_level": "6",
+    "cpus": "4",
+    "disk_size": "100000",
+    "headless": "true",
+    "iso_checksum": "sha256:f11bda2f2caed8f420802b59f382c25160b114ccc665dbac9c5046e7fceaced2",
+    "memory": "8192",
+    "mirror": "https://cdimage.ubuntu.com/ubuntu-legacy-server/releases/20.04.1/release",
+    "ssh_timeout": "60m"
+  }
+}
