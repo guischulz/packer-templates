@@ -10,11 +10,11 @@ Clone the repository:
 
 Change working directory to template sub-directory:
 
-    cd packer-templates\ubuntu-18.04
+    cd packer-templates\ubuntu-20.04
 
 Build a machine image from the template in the repository:
 
-    packer build ubuntu-18.04.4-server-amd64.json
+    packer build ubuntu-20.04.1-server-amd64.json
 
 ## Configuration
 
@@ -37,9 +37,9 @@ ssh    | TCP      | 22        | 22
 
 ### Example
 
-Build an Ubuntu 18.04 server image with a 10 GB hard disk, 2 GB memory and 1 CPU using the VirtualBox provider:
+Build an Ubuntu 20.04 server image with a 10 GB hard disk, 2 GB memory and 1 CPU using the VirtualBox provider:
 
-    packer build -only=virtualbox-iso -var disk_size=10000 -var memory=2048 -var cpus=1 -var mirror="http://cdimage.ubuntu.com/releases/18.04/release" ubuntu-18.04.4-server-amd64.json
+    packer build -only=virtualbox-iso -var disk_size=10000 -var memory=2048 -var cpus=1 ubuntu-20.04.1-server-amd64.json
 
 **Know Problem**: On Windows platform `packer` sometimes fails to halt and deregister the VirtualBox VM.
 
@@ -49,4 +49,4 @@ Build an Ubuntu 18.04 server image with a 10 GB hard disk, 2 GB memory and 1 CPU
 
 **Workaround**: Add option `post_shutdown_delay` to your `packer` command line arguments, e.g.
 
-    packer build -only=virtualbox-iso -var post_shutdown_delay=2m ...
+    packer build -var post_shutdown_delay=2m ubuntu-20.04.1-server-amd64.json

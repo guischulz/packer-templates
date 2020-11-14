@@ -1,7 +1,7 @@
 #!/bin/bash -eux
 
 # Install VirtualBox guest additions
-mount -o loop,ro ~/VBoxGuestAdditions.iso /mnt/
+mount -o ro ~/VBoxGuestAdditions.iso /mnt/
 sh /mnt/VBoxLinuxAdditions.run --nox11
 umount /mnt/
 

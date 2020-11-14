@@ -43,7 +43,7 @@
     {
       "type": "shell",
       "expect_disconnect": "true",
-      "execute_command": "echo 'ubuntu' | sudo -S bash {{ .Path }}",
+      "execute_command": "echo 'ubuntu' | sudo -E -S bash {{ .Path }}",
       "scripts": [
         "scripts/apt.sh",   
         "scripts/sudoers.sh",     
@@ -53,7 +53,7 @@
     },
     {
       "type": "shell",
-      "execute_command": "echo 'ubuntu' | sudo -S bash {{ .Path }}",
+      "execute_command": "echo 'ubuntu' | sudo -E -S bash {{ .Path }}",
       "only": ["virtualbox-iso"],
       "scripts": [
         "scripts/virtualbox.sh"
